@@ -1,23 +1,39 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  useEffect(() => {
+    const text = document.getElementById('api-content')
+    const API_KEY = 'O0jp6kdnPaGPOfJxI1NFDlzjAHiGavEG5ZUVMEeC'
+    const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=UTFPR&limit=1`
+    fetch(apiUrl)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro na requisição')
+        }
+        return response.json()
+      })
+      .then(responseJSON => {
+        console.log(responseJSON.data)
+        text.innerHTML = responseJSON['data'][0]['title']
+      })
+      .catch(error => {
+        console.error('Erro', error)
+      })
+  }, [])
 
   return (
     <>
-      <h1>Vite + React</h1>
+      <h1>Site de Noticias</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+        <h1>
+          Bem vindo à um site muito melhor que o G1 S2
+        </h1>
         <p>
-          Edit <code>src/components/App.jsx</code> and save to test HMR
+          Conteudo da API
         </p>
+        <span id='api-content'></span>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
