@@ -107,11 +107,6 @@ function NewsList() {
           onChange={(e) => setSearchTerm(e.target.value)}
           slotProps={{
             input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: "grey.500" }} />
-                </InputAdornment>
-              ),
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
