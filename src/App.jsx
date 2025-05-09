@@ -21,12 +21,12 @@ const theme = createTheme({
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "setNews":
-      return { ...state, news: action.payload };
-    case "setPage":
-      return { ...state, page: action.payload };
-    case "setLimit":
-      return { ...state, limit: action.payload };
+    case 'setNews':
+      return { ...state, news: action.payload }
+    case 'setPage':
+      return { ...state, page: action.payload }
+    case 'setTabs':
+      return { ...state, tabs: Math.ceil(action.payload  / 3) }
     default:
       return "This is not a valid action";
   }
@@ -36,12 +36,13 @@ function App() {
   const [state, dispatch] = useReducer(reducer, {
     news: [],
     page: 1,
-    limit: 3,
-  });
+    tabs: 1
+  })
 
   useEffect(() => {
-    const API_KEY = "MuitxGgnsGvxDGNOagzwSKuDCu0GSBhMBDzoY2YW";
-    const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=UTFPR&limit=${state.limit}&page=${state.page}`;
+    const API_KEY = 'MuitxGgnsGvxDGNOagzwSKuDCu0GSBhMBDzoY2YW'
+    const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=UTFPR&page=${state.page}`
+
 
     fetch(apiUrl)
       .then((response) => {
@@ -51,14 +52,15 @@ function App() {
         return response.json();
       })
       .then((responseJSON) => {
-        if (!responseJSON.data) throw responseJSON;
-        const newsArray = responseJSON.data;
-        dispatch({ type: "setNews", payload: newsArray });
+        if (!responseJSON.data) throw responseJSON
+        dispatch({ type: 'setTabs', payload: responseJSON.meta.found })
+        const newsArray = responseJSON.data
+        dispatch({ type: 'setNews', payload: newsArray })
       })
-      .catch((error) => {
-        console.error("Erro", error);
-      });
-  }, [state.limit, state.page]);
+      .catch(error => {
+        console.error('Erro', error)
+      })
+  }, [state.page])
 
   return (
     <ThemeProvider theme={theme}>
