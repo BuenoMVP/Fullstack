@@ -1,4 +1,6 @@
 import { Box, Container, Typography } from "@mui/material";
+import { useContext } from "react";
+import { LanguageContext } from "../../contexts/LanguageContext";
 
 const content = {
   en: "© 2025 UTFPR News. All rights reserved.",
@@ -14,9 +16,10 @@ const styles = {
   },
 };
 
-const language = "pt";
 
 function Footer() {
+  const { language } = useContext(LanguageContext);
+
   return (
     <Box component="footer" sx={styles.footer}>
       <Container maxWidth="xl">

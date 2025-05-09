@@ -1,5 +1,6 @@
 import { AppBar, Toolbar, Box, CardMedia, Button, Stack } from "@mui/material";
-import { useState } from "react";
+import { useContext } from "react";
+import { LanguageContext } from "../../contexts/LanguageContext";
 
 import Logo from "../../logo.svg";
 
@@ -100,11 +101,7 @@ function LanguageSwitch({ onClick, selectedLanguage }) {
 }
 
 function Header() {
-  const [language, setLanguage] = useState("pt");
-
-  const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "pt" ? "en" : "pt"));
-  };
+  const { language, toggleLanguage } = useContext(LanguageContext);
 
   return (
     <AppBar position="static" sx={styles.appBar}>

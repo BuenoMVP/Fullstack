@@ -1,18 +1,23 @@
-import { useEffect, useReducer } from 'react'
-import './App.css'
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { useEffect, useReducer } from "react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { LanguageProvider } from "./contexts/LanguageContext";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import { Box } from "@mui/material";
+import NewsList from "./components/NewsList";
+
+import "./App.css";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: "#1976d2",
     },
     secondary: {
-      main: '#dc004e',
+      main: "#dc004e",
     },
   },
 });
-
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -23,13 +28,13 @@ const reducer = (state, action) => {
     case 'setTabs':
       return { ...state, tabs: Math.ceil(action.payload  / 3) }
     default:
-      return 'This is not a valid action'
+      return "This is not a valid action";
   }
-}
+};
 
 function App() {
   const [state, dispatch] = useReducer(reducer, {
-    news: [{}],
+    news: [],
     page: 1,
     tabs: 1
   })
@@ -38,14 +43,16 @@ function App() {
     const API_KEY = 'MuitxGgnsGvxDGNOagzwSKuDCu0GSBhMBDzoY2YW'
     const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=UTFPR&page=${state.page}`
 
+
     fetch(apiUrl)
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
-          throw new Error('Erro na requisição')
+          throw new Error("Erro na requisição");
         }
-        return response.json()
+        return response.json();
       })
-      .then(responseJSON => {
+      .then((responseJSON) => {
+        if (!responseJSON.data) throw responseJSON
         dispatch({ type: 'setTabs', payload: responseJSON.meta.found })
         const newsArray = responseJSON.data
         dispatch({ type: 'setNews', payload: newsArray })
@@ -57,31 +64,22 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <h1>Site de Noticias</h1>
-      <div className="card">
-        <h1>
-          Bem vindo à um site muito melhor que o G1 S2
-        </h1>                       
-        <label htmlFor='page'>Page</label>
-        <input
-          type='number'
-          id='page'
-          value={state.page}
-          onChange={(e) => dispatch({ type: 'setPage', payload: e.target.value })}
-        />
-        <br />
-        <p>
-          Conteudo da API
-        </p>
-        <ul id='api-content'>
-          {state.news.map((item, index) => (
-            <li key={index}>{item.title}</li>
-          ))}
-        </ul>
-      </div>
-  
+      <LanguageProvider>
+        <Header />
+        <Box
+          sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+        >
+          <Box
+            component="main"
+            sx={{ flex: 1, py: 4, display: "flex", justifyContent: "center" }}
+          >
+            <NewsList newsList={state.news} />
+          </Box>
+        </Box>
+        <Footer />
+      </LanguageProvider>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;
