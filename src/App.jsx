@@ -1,5 +1,18 @@
 import { useEffect } from 'react'
 import './App.css'
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
+
 
 function App() {
   useEffect(() => {
@@ -23,7 +36,7 @@ function App() {
   }, [])
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <h1>Site de Noticias</h1>
       <div className="card">
         <h1>
@@ -34,7 +47,8 @@ function App() {
         </p>
         <span id='api-content'></span>
       </div>
-    </>
+  
+    </ThemeProvider>
   )
 }
 
