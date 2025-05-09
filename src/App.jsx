@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useReducer } from 'react'
 import './App.css'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
@@ -14,11 +14,30 @@ const theme = createTheme({
 });
 
 
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'setNews':
+      return { ...state, news: action.payload }
+    case 'setPage':
+      return { ...state, page: action.payload }
+    case 'setLimit':
+      return { ...state, limit: action.payload }
+    default:
+      return 'This is not a valid action'
+  }
+}
+
 function App() {
+  const [state, dispatch] = useReducer(reducer, {
+    news: [{}],
+    page: 1,
+    limit: 1
+  })
+
   useEffect(() => {
-    const text = document.getElementById('api-content')
     const API_KEY = 'O0jp6kdnPaGPOfJxI1NFDlzjAHiGavEG5ZUVMEeC'
-    const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=UTFPR&limit=1`
+    const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=UTFPR&limit=${state.limit}&page=${state.page}`
+
     fetch(apiUrl)
       .then(response => {
         if (!response.ok) {
@@ -27,13 +46,13 @@ function App() {
         return response.json()
       })
       .then(responseJSON => {
-        console.log(responseJSON.data)
-        text.innerHTML = responseJSON['data'][0]['title']
+        const newsArray = responseJSON.data
+        dispatch({ type: 'setNews', payload: newsArray })
       })
       .catch(error => {
         console.error('Erro', error)
       })
-  }, [])
+  }, [state.limit, state.page])
 
   return (
     <ThemeProvider theme={theme}>
@@ -41,11 +60,30 @@ function App() {
       <div className="card">
         <h1>
           Bem vindo à um site muito melhor que o G1 S2
-        </h1>
+        </h1>                       
+        <label htmlFor='page'>Page</label>
+        <input
+          type='number'
+          id='page'
+          value={state.page}
+          onChange={(e) => dispatch({ type: 'setPage', payload: e.target.value })}
+        />
+        <br />
+        <label htmlFor='limit'>Limit</label>
+        <input
+          type='number'
+          id='limit'
+          value={state.limit}
+          onChange={(e) => dispatch({ type: 'setLimit', payload: e.target.value })}
+        />
         <p>
           Conteudo da API
         </p>
-        <span id='api-content'></span>
+        <ul id='api-content'>
+          {state.news.map((item, index) => (
+            <li key={index}>{item.title}</li>
+          ))}
+        </ul>
       </div>
   
     </ThemeProvider>
