@@ -20,8 +20,8 @@ const reducer = (state, action) => {
       return { ...state, news: action.payload }
     case 'setPage':
       return { ...state, page: action.payload }
-    case 'setLimit':
-      return { ...state, limit: action.payload }
+    case 'setTabs':
+      return { ...state, tabs: Math.ceil(action.payload  / 3) }
     default:
       return 'This is not a valid action'
   }
@@ -31,12 +31,12 @@ function App() {
   const [state, dispatch] = useReducer(reducer, {
     news: [{}],
     page: 1,
-    limit: 1
+    tabs: 1
   })
 
   useEffect(() => {
-    const API_KEY = 'O0jp6kdnPaGPOfJxI1NFDlzjAHiGavEG5ZUVMEeC'
-    const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=UTFPR&limit=${state.limit}&page=${state.page}`
+    const API_KEY = 'MuitxGgnsGvxDGNOagzwSKuDCu0GSBhMBDzoY2YW'
+    const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=UTFPR&page=${state.page}`
 
     fetch(apiUrl)
       .then(response => {
@@ -46,13 +46,14 @@ function App() {
         return response.json()
       })
       .then(responseJSON => {
+        dispatch({ type: 'setTabs', payload: responseJSON.meta.found })
         const newsArray = responseJSON.data
         dispatch({ type: 'setNews', payload: newsArray })
       })
       .catch(error => {
         console.error('Erro', error)
       })
-  }, [state.limit, state.page])
+  }, [state.page])
 
   return (
     <ThemeProvider theme={theme}>
@@ -69,13 +70,6 @@ function App() {
           onChange={(e) => dispatch({ type: 'setPage', payload: e.target.value })}
         />
         <br />
-        <label htmlFor='limit'>Limit</label>
-        <input
-          type='number'
-          id='limit'
-          value={state.limit}
-          onChange={(e) => dispatch({ type: 'setLimit', payload: e.target.value })}
-        />
         <p>
           Conteudo da API
         </p>
