@@ -8,10 +8,16 @@ import {
   Grid,
   Pagination,
   Box,
+  TextField,
+  InputAdornment,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-import { useContext, useEffect, useReducer  } from "react";
+import { useContext, useEffect, useReducer, useState  } from "react";
+import SearchIcon from "@mui/icons-material/Search";
 import { LanguageContext } from "../../contexts/LanguageContext";
 import NewsCard from "../NewsCard";
+import IconButton from "@mui/material/IconButton";
 
 const content = {
   otherNews: {
@@ -21,6 +27,14 @@ const content = {
   noNews: {
     en: "No news found",
     pt: "Nenhuma notícia encontrada",
+  },
+  search: {
+    en: "Search news...",
+    pt: "Buscar notícias...",
+  },
+  searchError: {
+    en: "Please enter at least 3 characters to search",
+    pt: "Digite pelo menos 3 caracteres para buscar",
   },
 };
 
@@ -39,6 +53,17 @@ const reducer = (state, action) => {
 
 function NewsList() {
   const { language } = useContext(LanguageContext);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showError, setShowError] = useState(false);
+
+  const handleSearch = () => {
+    if (searchTerm.length > 0 && searchTerm.length < 3) {
+      setShowError(true);
+      return;
+    }
+
+    // onSearch(searchTerm);
+  };
 
   const [state, dispatch] = useReducer(reducer, {
     news: [],
@@ -73,6 +98,72 @@ function NewsList() {
 
   return (
     <Container maxWidth="lg">
+      <Box sx={{ mb: 4 }}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder={content.search[language]}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: "grey.500" }} />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label={content.search[language]}
+                    sx={{
+                      backgroundColor: "#242424",
+                      borderRadius: "50%",
+                      "&:hover": {
+                        backgroundColor: "#242424",
+                        opacity: "0.9",
+                      },
+                    }}
+                    onClick={handleSearch}
+                  >
+                    <SearchIcon sx={{ color: "white" }} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              backgroundColor: "white",
+              "& fieldset": {
+                borderColor: "grey.300",
+              },
+              "&:hover fieldset": {
+                borderColor: "grey.400",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "primary.main",
+              },
+            },
+          }}
+        />
+      </Box>
+
+      <Snackbar
+        open={showError}
+        autoHideDuration={3000}
+        onClose={() => setShowError(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setShowError(false)}
+          severity="warning"
+          sx={{ width: "100%" }}
+        >
+          {content.searchError[language]}
+        </Alert>
+      </Snackbar>
+
       {state.news.length > 0 ? (
         <>
           <Card sx={{ mb: 4 }}>
@@ -128,22 +219,22 @@ function NewsList() {
                 dispatch({ type: "setPage", payload: value })
               }
               sx={{
-                display: 'flex',
-                justifyContent: 'center',
+                display: "flex",
+                justifyContent: "center",
                 mt: 4,
-                '& .MuiPaginationItem-root': {
-                  color: 'grey.400',
-                  border: '1px solid grey.400',
-                  '&:hover': {
-                    color: 'white',
-                    borderColor: 'white',
+                "& .MuiPaginationItem-root": {
+                  color: "grey.400",
+                  border: "1px solid grey.400",
+                  "&:hover": {
+                    color: "white",
+                    borderColor: "white",
                   },
-                  '&.Mui-selected': {
-                    color: 'white',
-                    borderColor: 'white',
-                    '&:hover': {
-                      color: 'white',
-                      borderColor: 'white',
+                  "&.Mui-selected": {
+                    color: "white",
+                    borderColor: "white",
+                    "&:hover": {
+                      color: "white",
+                      borderColor: "white",
                     },
                   },
                 },
