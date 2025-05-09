@@ -13,7 +13,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { useContext, useEffect, useReducer, useState  } from "react";
+import { useContext, useEffect, useReducer, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import { LanguageContext } from "../../contexts/LanguageContext";
 import NewsCard from "../NewsCard";
@@ -168,7 +168,13 @@ function NewsList() {
 
       {state.news.length > 0 ? (
         <>
-          <Card sx={{ mb: 4 }}>
+          <Card
+            component="a"
+            href={mainNews.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ mb: 4, textDecoration: 'none', display: 'block'}}
+          >
             <CardActionArea>
               <CardMedia
                 component="img"
@@ -176,7 +182,7 @@ function NewsList() {
                 image={mainNews.image_url}
                 alt={mainNews.title}
               />
-              <CardContent>
+              <CardContent sx={{ backgroundColor: "white" }}>
                 <Typography variant="h4" component="h1" gutterBottom>
                   {mainNews.title}
                 </Typography>
