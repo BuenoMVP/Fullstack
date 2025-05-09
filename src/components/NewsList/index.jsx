@@ -73,25 +73,31 @@ function NewsList() {
   });
 
   useEffect(() => {
-    const API_KEY = "MuitxGgnsGvxDGNOagzwSKuDCu0GSBhMBDzoY2YW";
-    const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=${searchTerm}&page=${state.page}&language=${language}`;
 
-    fetch(apiUrl)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Erro na requisição"); 
-        }
-        return response.json();
-      })
-      .then((responseJSON) => {
-        if (!responseJSON.data) throw responseJSON;
-        dispatch({ type: "setTabs", payload: responseJSON.meta.found });
-        const newsArray = responseJSON.data;
-        dispatch({ type: "setNews", payload: newsArray });
-      })
-      .catch((error) => {
-        console.error("Erro", error);
-      });
+    const searchNews = () => {
+      const API_KEY = "jpGpEbW7EQfQQCo4YDpBIWmIYNL4jmPzsUnKDHXP";
+      const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=${searchTerm}&page=${state.page}&language=${language}`;
+
+      fetch(apiUrl)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Erro na requisição"); 
+          }
+          return response.json();
+        })
+        .then((responseJSON) => {
+          if (!responseJSON.data) throw responseJSON;
+          dispatch({ type: "setTabs", payload: responseJSON.meta.found });
+          const newsArray = responseJSON.data;
+          dispatch({ type: "setNews", payload: newsArray });
+        })
+        .catch((error) => {
+          console.error("Erro", error);
+        });
+    }
+
+    searchNews();
+
   }, [state.page, language, searchTerm]);
 
   const mainNews = state.news[0];
