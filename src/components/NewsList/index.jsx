@@ -6,6 +6,8 @@ import {
   CardContent,
   Typography,
   Grid,
+  Pagination,
+  Box,
 } from "@mui/material";
 import { useContext } from "react";
 import { LanguageContext } from "../../contexts/LanguageContext";
@@ -22,13 +24,11 @@ const content = {
   },
 };
 
-function NewsList({ newsList }) {
+function NewsList({ newsList, tabs, page, onPageChange }) {
   const { language } = useContext(LanguageContext);
 
   const mainNews = newsList[0];
   const secondaryNewsList = newsList.length > 1 ? newsList.slice(1) : [];
-
-  console.log(newsList);
 
   return (
     <Container maxWidth="lg">
@@ -78,6 +78,15 @@ function NewsList({ newsList }) {
               </Grid>
             </>
           ) : null}
+
+          <Box display="flex" justifyContent="center" mt={3}>
+            <Pagination
+              variant="outlined"
+              count={tabs}
+              page={page}
+              onChange={onPageChange}
+            />
+          </Box>
         </>
       ) : (
         <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 3 }}>

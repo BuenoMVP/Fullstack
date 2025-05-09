@@ -7,7 +7,8 @@ function NewsCard({ title, description, image_url: imageUrl, url, date }) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        sx={{ 
+        sx={{
+          height: "100%",
           display: 'flex',
           flexDirection: 'column',
           textDecoration: 'none',
