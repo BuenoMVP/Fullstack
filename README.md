@@ -1,13 +1,15 @@
-# Projeto de Oficina de Integração 2
+# Projeto 1 de Programação Web Fullstack
 Este projeto foi criado para a disciplina de Programação Full-Stack. 
 Nosso objetivo consiste em criar uma plataforma capaz de realizar pesquisas de noticias utilizando a API thenewsapi.
 
 ## Como rodar o projeto localmente
-### 1. Instalação de dependências
+### 1. Instalação do vite
+Utilize o comando <pre> ```npm install -g vite``` </pre> dentro do terminal da pasta do projeto para instalar o Vite globalmente no seu sistema.
+### 2. Instalação de dependências
 Utilize o comando <pre> ```npm install``` </pre> dentro do terminal da pasta do projeto.
-### 2. Iniciar Frontend
+### 3. Iniciar Frontend
 Após a instalação das dependências utilize o comando <pre> ```npm run dev``` </pre> no terminal do projeto para iniciar o Frontend.
-### 3. Rota do navegador
+### 4. Rota do navegador
 Entre na rota http://localhost:5173/ no seu navegador para poder utilizar a aplicação
 
 ## Critérios de avaliação
