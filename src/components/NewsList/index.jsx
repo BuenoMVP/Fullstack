@@ -53,16 +53,17 @@ const reducer = (state, action) => {
 
 function NewsList() {
   const { language } = useContext(LanguageContext);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("UTFPR");
+  const [searchValue, setSearchValue] = useState("");
   const [showError, setShowError] = useState(false);
 
   const handleSearch = () => {
-    if (searchTerm.length > 0 && searchTerm.length < 3) {
+    if (searchValue.length > 0 && searchValue.length < 3) {
       setShowError(true);
       return;
     }
 
-    // onSearch(searchTerm);
+    setSearchTerm(searchValue);
   };
 
   const [state, dispatch] = useReducer(reducer, {
@@ -73,7 +74,7 @@ function NewsList() {
 
   useEffect(() => {
     const API_KEY = "MuitxGgnsGvxDGNOagzwSKuDCu0GSBhMBDzoY2YW";
-    const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=UTFPR&page=${state.page}&language=${language}`;
+    const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=${searchTerm}&page=${state.page}&language=${language}`;
 
     fetch(apiUrl)
       .then((response) => {
@@ -91,7 +92,7 @@ function NewsList() {
       .catch((error) => {
         console.error("Erro", error);
       });
-  }, [state.page, language]);
+  }, [state.page, language, searchTerm]);
 
   const mainNews = state.news[0];
   const secondaryNewsList = state.news.length > 1 ? state.news.slice(1) : [];
@@ -103,8 +104,8 @@ function NewsList() {
           fullWidth
           variant="outlined"
           placeholder={content.search[language]}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
           slotProps={{
             input: {
               endAdornment: (
