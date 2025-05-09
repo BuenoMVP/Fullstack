@@ -75,7 +75,7 @@ function NewsList() {
   useEffect(() => {
 
     const searchNews = () => {
-      const API_KEY = "jpGpEbW7EQfQQCo4YDpBIWmIYNL4jmPzsUnKDHXP";
+      const API_KEY = import.meta.env.VITE_API_KEY;
       const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=${searchTerm}&page=${state.page}&language=${language}`;
 
       fetch(apiUrl)
