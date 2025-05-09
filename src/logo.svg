@@ -1,0 +1,8 @@
+ <svg width="150" height="40" viewBox="0 0 150 40" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .utfpr { font: bold 24px sans-serif; fill: #000000; }
+    .news { font: 24px sans-serif; fill: #f7d117; }
+  </style>
+  <text x="0" y="28" class="utfpr">UTFPR</text>
+  <text x="86" y="28" class="news">news</text>
+</svg>
