@@ -28,8 +28,8 @@ Os componentes criados se comunicam utilizando a **Context API** e está localiz
 O hook escolhido foi o useReducer, o qual ainda atuou em conjunto com o useContext, useEffect e useState. Sua implementação está no arquivo `src\components\NewsList\index.jsx`
 - ### Uso de uma biblioteca externa selecionada pelo grupo.
 Foi utilizado a [Material UI](https://mui.com/material-ui/).
-- ### Geração do pacote de deployment da aplicacção e disponibilização em um servidor web.
-O deploy da aplicação dentro de um servidor web pode se acessa através do link: 
+- ### Geração do pacote de deployment da aplicação e disponibilização em um servidor web.
+O deploy da aplicação dentro de um servidor web pode ser acessado através do link: https://fullstack-i9v0.onrender.com/
 - ### Atualização incremental das mudanças de código-fonte no Git.
 Os commits e atualizações foram feitos de forma incremental, seguindo a solicitação do professor.
 
