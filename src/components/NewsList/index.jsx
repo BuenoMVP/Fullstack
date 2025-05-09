@@ -85,6 +85,27 @@ function NewsList({ newsList, tabs, page, onPageChange }) {
               count={tabs}
               page={page}
               onChange={onPageChange}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                mt: 4,
+                '& .MuiPaginationItem-root': {
+                  color: 'grey.400',
+                  border: '1px solid grey.400',
+                  '&:hover': {
+                    color: 'white',
+                    borderColor: 'white',
+                  },
+                  '&.Mui-selected': {
+                    color: 'white',
+                    borderColor: 'white',
+                    '&:hover': {
+                      color: 'white',
+                      borderColor: 'white',
+                    },
+                  },
+                },
+              }}
             />
           </Box>
         </>
