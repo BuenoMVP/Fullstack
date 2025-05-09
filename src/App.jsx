@@ -69,7 +69,7 @@ function App() {
         >
           <Box
             component="main"
-            sx={{ flex: 1, py: 4, display: "flex", justifyContent: "center" }}
+            sx={{ flex: 1, py: 4 }}
           >
             <NewsList newsList={state.news} />
           </Box>

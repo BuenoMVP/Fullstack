@@ -39,6 +39,7 @@ function NewsList({ newsList }) {
               <CardMedia
                 component="img"
                 height="400"
+                objectFit="cover"
                 image={mainNews.image_url}
                 alt={mainNews.title}
               />
@@ -68,9 +69,9 @@ function NewsList({ newsList }) {
               >
                 {content.otherNews[language]}
               </Typography>
-              <Grid container spacing={3} justifyContent="center">
+              <Grid container spacing={3}>
                 {secondaryNewsList.map((news, index) => (
-                  <Grid item xs={12} sm={6} md={3} key={index}>
+                  <Grid item size={{ xs: 12, sm: 6 }} key={index}>
                     <NewsCard {...news} />
                   </Grid>
                 ))}
