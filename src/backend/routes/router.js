@@ -1,12 +1,12 @@
 import express from 'express'
-import loginRouter from './login.js'
+import usersRouter from './users.js'
 
 const router = express.Router()
 
-router.use('/login', loginRouter)
+router.use('/users', usersRouter)
 
 router.get('/', (_req, res) => {
-    res.send('Página inicial da api')
+    res.send('Realize o longin')
 })
 
 export default router
