@@ -16,6 +16,41 @@ router.get('/', async (_req, res) => {
     }
 })
 
+router.post('/list', async (req, res) => {
+  console.log("Rota /list chamada com dados:", req.body);
+    try {
+      const noticias = req.body;
+
+      if (!Array.isArray(noticias))
+        return res.status(400).json({ msg: "Esperado um array de notícias!" });
+
+      const noticiasParaCriar = [];
+      
+      for (const noticia of noticias) {
+        const validNews = await schemaNews.find({ titulo: noticia.titulo });
+        
+        if (validNews.length === 0) {
+          noticiasParaCriar.push({
+            titulo: noticia.titulo,
+            data: noticia.data,
+            link: noticia.link,
+            imagem: noticia.imagem,
+            descricao: noticia.descricao
+          });
+        }
+      }
+
+      const objNews = await schemaNews.insertMany(noticiasParaCriar);
+
+      res.status(201).json({ 
+        criadas: objNews.length, 
+        duplicadas: noticias.length - objNews.length
+      });
+    } catch (error) {
+      res.status(400).json({ "Erro ao adicionar notícias": error });
+    }
+})
+
 router.post('/', async (req, res) => {
     try {
       const noticia = { ...req.body };
