@@ -1,9 +1,11 @@
 import express from 'express'
 import schemaUsers from '../models/Users.js'
+import bcrypt from 'bcrypt'
+import { authenticateToken } from './login.js'
 
 const router = express.Router()
 
-router.get('/', async (_req, res) => {
+router.get('/', authenticateToken, async (_req, res) => {
     try {
       const objUsuarios = await schemaUsers.find();
 
@@ -27,10 +29,12 @@ router.post('/', async (req, res) => {
       if (validUser.length > 0)
         return res.status(400).json({ msg: "Usuário já cadastrado!" });
 
+      const senhaHash = await bcrypt.hash(usuario.senha, 10);
+
       const novoUsuario = {
         nome: usuario.nome,
         email: usuario.email,
-        senha: usuario.senha,
+        senha: senhaHash,
       }
 
       const objUsuario = await schemaUsers.create(novoUsuario);
@@ -44,7 +48,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
     try {
       const { id } = req.params;
       const usuario = { ...req.body };
@@ -66,7 +70,7 @@ router.put('/:id', async (req, res) => {
     }
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
     try {
       const { id } = req.params;
 
