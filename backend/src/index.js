@@ -1,9 +1,9 @@
-import { server } from './src/config/server.js';
+import { server } from './config/server.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { connectDB } from './src/config/connectDB.js';
+import { connectDB } from './config/connectDB.js';
 connectDB();
 
 const PORT = process.env.VITE_BACKEND_PORT || 8080;

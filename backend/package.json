@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "back": "nodemon src/index.js",
+    "back": "node src/index.js",
+    "back:dev": "nodemon src/index.js",
     "start": "vite"
   },
   "dependencies": {
