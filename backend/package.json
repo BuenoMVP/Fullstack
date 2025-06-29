@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "back": "nodemon src/backend/index.js",
+    "back": "nodemon src/index.js",
     "start": "vite"
   },
   "dependencies": {
