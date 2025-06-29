@@ -2,6 +2,7 @@ import express from 'express'
 import schemaUsers from '../models/Users.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import { logSecurity, logActivity } from '../config/logger.js'
 
 const router = express.Router()
 
@@ -20,6 +21,7 @@ const rateLimiter = (req, res, next) => {
   const attempts = loginAttempts.get(ip)
   
   if (attempts.count >= MAX_ATTEMPTS && (now - attempts.lastAttempt) < BLOCK_TIME) {
+    logSecurity('RATE_LIMIT_EXCEEDED', { ip, attempts: attempts.count });
     return res.status(429).json({ msg: "Muitas tentativas. Tente novamente em 15 minutos." })
   }
   
@@ -45,6 +47,7 @@ router.post('/', rateLimiter, async (req, res) => {
       const attempts = loginAttempts.get(ip)
       attempts.count++
       attempts.lastAttempt = Date.now()
+      logSecurity('LOGIN_FAILED', { email, ip, reason: 'user_not_found' });
       return res.status(401).json({ msg: "Credenciais inválidas" })
     }
 
@@ -54,6 +57,7 @@ router.post('/', rateLimiter, async (req, res) => {
       const attempts = loginAttempts.get(ip)
       attempts.count++
       attempts.lastAttempt = Date.now()
+      logSecurity('LOGIN_FAILED', { email, ip, reason: 'invalid_password' });
       return res.status(401).json({ msg: "Credenciais inválidas" })
     }
 
@@ -65,6 +69,7 @@ router.post('/', rateLimiter, async (req, res) => {
       { expiresIn: '1h' }
     )
 
+    logActivity('LOGIN_SUCCESS', { email, ip, userId: usuario._id });
     res.status(200).json({
       msg: "Login realizado com sucesso",
       token
@@ -80,11 +85,13 @@ export const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1]
 
   if (!token) {
+    logSecurity('AUTH_FAILED', { ip: req.ip, reason: 'no_token' });
     return res.status(401).json({ msg: "Token de acesso requerido" })
   }
 
   jwt.verify(token, process.env.VITE_JWT_SECRET || 'fallback_secret', (err, user) => {
     if (err) {
+      logSecurity('AUTH_FAILED', { ip: req.ip, reason: 'invalid_token' });
       return res.status(403).json({ msg: "Token inválido ou expirado" })
     }
     req.user = user

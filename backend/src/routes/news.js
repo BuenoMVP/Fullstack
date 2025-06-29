@@ -1,5 +1,6 @@
 import express from 'express'
 import schemaNews from '../models/News.js'
+import { logActivity } from '../config/logger.js'
 
 const router = express.Router()
 
@@ -10,6 +11,7 @@ router.get('/', async (_req, res) => {
       if (!objNews)
         return res.status(404).json({ msg: "Noticias não encontrados!" });
 
+      logActivity('NEWS_SEARCH', { count: objNews.length, ip: _req.ip });
       res.status(200).send(objNews);
     } catch (error) {
       res.status(400).json({ "Erro ao resgatar noticias": error });
@@ -42,6 +44,7 @@ router.post('/list', async (req, res) => {
 
       const objNews = await schemaNews.insertMany(noticiasParaCriar);
 
+      logActivity('NEWS_BULK_CREATE', { created: objNews.length, duplicated: noticias.length - objNews.length, ip: req.ip });
       res.status(201).json({ 
         criadas: objNews.length, 
         duplicadas: noticias.length - objNews.length
@@ -75,6 +78,7 @@ router.post('/', async (req, res) => {
       if (!objNews)
         return res.status(400).json({ msg: "Noticia não criada!" });
 
+      logActivity('NEWS_CREATE', { title: novaNoticia.titulo, ip: req.ip });
       res.status(201).json({ objNews, msg: "Noticia criada!" });
     } catch (error) {
       res.status(400).json({ "Erro ao adicionar noticia": error });
@@ -99,6 +103,7 @@ router.put('/:id', async (req, res) => {
       if (!objNews)
         return res.status(404).json({ msg: "Noticia não encontrada!" });
 
+      logActivity('NEWS_UPDATE', { id, ip: req.ip });
       res.status(200).json({ objNews, msg: "Noticia atualizada!" });
     } catch (error) {
       res.status(400).json({ "Erro ao atualizar noticia": error });
@@ -114,6 +119,7 @@ router.delete('/:id', async (req, res) => {
       if (!objNews)
         return res.status(404).json({ msg: "Noticia não encontrada!" });
 
+      logActivity('NEWS_DELETE', { id, ip: req.ip });
       res.status(200).json({ objNews, msg: "Noticia deletada!" });
     } catch (error) {
       res.status(400).json({ "Erro ao deletar noticia": error });

@@ -2,6 +2,7 @@ import express from 'express'
 import schemaUsers from '../models/Users.js'
 import bcrypt from 'bcrypt'
 import { authenticateToken } from './login.js'
+import { logActivity } from '../config/logger.js'
 
 const router = express.Router()
 
@@ -42,6 +43,7 @@ router.post('/', async (req, res) => {
       if (!objUsuario)
         return res.status(400).json({ msg: "Usuário não criado!" });
 
+      logActivity('USER_CREATE', { email: novoUsuario.email, ip: req.ip });
       res.status(201).json({ objUsuario, msg: "Usuário criado!" });
     } catch (error) {
       res.status(400).json({ "Erro ao adicionar usuário": error });
@@ -64,6 +66,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
       if (!objUsuario)
         return res.status(404).json({ msg: "Usuário não encontrado!" });
 
+      logActivity('USER_UPDATE', { id, ip: req.ip });
       res.status(200).json({ objUsuario, msg: "Usuário atualizado!" });
     } catch (error) {
       res.status(400).json({ "Erro ao atualizar usuário": error });
@@ -79,6 +82,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       if (!objUsuario)
         return res.status(404).json({ msg: "Usuário não encontrado!" });
 
+      logActivity('USER_DELETE', { id, ip: req.ip });
       res.status(200).json({ objUsuario, msg: "Usuário deletado!" });
     } catch (error) {
       res.status(400).json({ "Erro ao deletar usuário": error });
