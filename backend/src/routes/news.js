@@ -1,5 +1,5 @@
 import express from 'express'
-import schemaNews from '../../../backend/src/models/News.js'
+import schemaNews from '../models/News.js'
 
 const router = express.Router()
 
