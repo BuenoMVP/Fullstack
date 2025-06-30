@@ -12,10 +12,14 @@ import {
   InputAdornment,
   Snackbar,
   Alert,
+  Button,
 } from "@mui/material";
 import { useContext, useEffect, useReducer, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
 import { LanguageContext } from "../../contexts/LanguageContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import NewsCard from "../NewsCard";
 import IconButton from "@mui/material/IconButton";
 
@@ -36,6 +40,14 @@ const content = {
     en: "Please enter at least 3 characters to search",
     pt: "Digite pelo menos 3 caracteres para buscar",
   },
+  createNews: {
+    en: "Create News",
+    pt: "Criar Notícia",
+  },
+  loading: {
+    en: "Loading...",
+    pt: "Carregando...",
+  },
 };
 
 const reducer = (state, action) => {
@@ -44,67 +56,109 @@ const reducer = (state, action) => {
       return { ...state, news: action.payload };
     case "setPage":
       return { ...state, page: action.payload };
-    case "setTabs":
-      return { ...state, tabs: Math.ceil(action.payload / 3) };
+    case "setTotal":
+      return { ...state, total: action.payload };
+    case "setLoading":
+      return { ...state, loading: action.payload };
     default:
-      return "This is not a valid action";
+      return state;
   }
 };
 
 function NewsList() {
   const { language } = useContext(LanguageContext);
-  const [searchTerm, setSearchTerm] = useState("UTFPR");
+  const { getToken } = useAuth();
+  const navigate = useNavigate();
+
   const [searchValue, setSearchValue] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [showError, setShowError] = useState(false);
+
+  const [state, dispatch] = useReducer(reducer, {
+    news: [],
+    page: 1,
+    total: 0,
+    loading: true,
+  });
 
   const handleSearch = () => {
     if (searchValue.length > 0 && searchValue.length < 3) {
       setShowError(true);
       return;
     }
-
     setSearchTerm(searchValue);
+    dispatch({ type: "setPage", payload: 1 });
   };
 
-  const [state, dispatch] = useReducer(reducer, {
-    news: [],
-    page: 1,
-    tabs: 1,
-  });
-
   useEffect(() => {
+    const fetchNews = async () => {
+      dispatch({ type: "setLoading", payload: true });
 
-    const searchNews = () => {
-      const API_KEY = import.meta.env.VITE_API_KEY;
-      const apiUrl = `https://api.thenewsapi.com/v1/news/all?api_token=${API_KEY}&search=${searchTerm}&page=${state.page}&language=${language}`;
+      try {
+        const token = getToken();
+        const limit = 3;
+        const offset = (state.page - 1) * limit;
 
-      fetch(apiUrl)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Erro na requisição"); 
-          }
-          return response.json();
-        })
-        .then((responseJSON) => {
-          if (!responseJSON.data) throw responseJSON;
-          dispatch({ type: "setTabs", payload: responseJSON.meta.found });
-          const newsArray = responseJSON.data;
-          dispatch({ type: "setNews", payload: newsArray });
-        })
-        .catch((error) => {
-          console.error("Erro", error);
+        const params = new URLSearchParams();
+        if (searchTerm) params.append("titulo", searchTerm);
+        params.append("lingua", language);
+        params.append("offset", offset);
+
+        const url = `${
+          import.meta.env.VITE_API_URL
+        }/api/search?${params.toString()}`;
+
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Accept-Encoding": "gzip, deflate, br",
+            "Cache-Control": "max-age=300",
+          },
+          cache: "default",
         });
-    }
 
-    searchNews();
+        if (!response.ok) throw new Error("Erro ao buscar notícias");
 
-  }, [state.page, language, searchTerm]);
+        const responseData = await response.json();
+        
+        dispatch({ type: "setNews", payload: responseData.results || [] });
+        dispatch({ type: "setTotal", payload: responseData.total || 0 });
+        dispatch({ type: "setLoading", payload: false });
+      } catch (error) {
+        console.error("Erro ao buscar notícias:", error);
+        dispatch({ type: "setNews", payload: [] });
+        dispatch({ type: "setTotal", payload: 0 });
+        dispatch({ type: "setLoading", payload: false });
+      }
+    };
+
+    fetchNews();
+  }, [searchTerm, language, state.page, getToken]);
 
   const mainNews = state.news[0];
-  const secondaryNewsList = state.news.length > 1 ? state.news.slice(1) : [];
+  const secondaryNews = state.news.slice(1);
+  const totalPages = Math.ceil(state.total / 3);
 
   return (
     <Container maxWidth="lg">
+      <Box
+        sx={{
+          mb: 4,
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => navigate("/create-news")}
+          sx={{ ml: 2 }}
+        >
+          {content.createNews[language]}
+        </Button>
+      </Box>
+
       <Box sx={{ mb: 4 }}>
         <TextField
           fullWidth
@@ -112,21 +166,18 @@ function NewsList() {
           placeholder={content.search[language]}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           slotProps={{
             input: {
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
-                    aria-label={content.search[language]}
+                    onClick={handleSearch}
                     sx={{
                       backgroundColor: "#242424",
                       borderRadius: "50%",
-                      "&:hover": {
-                        backgroundColor: "#242424",
-                        opacity: "0.9",
-                      },
+                      "&:hover": { backgroundColor: "#242424", opacity: "0.9" },
                     }}
-                    onClick={handleSearch}
                   >
                     <SearchIcon sx={{ color: "white" }} />
                   </IconButton>
@@ -137,15 +188,9 @@ function NewsList() {
           sx={{
             "& .MuiOutlinedInput-root": {
               backgroundColor: "white",
-              "& fieldset": {
-                borderColor: "grey.300",
-              },
-              "&:hover fieldset": {
-                borderColor: "grey.400",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "primary.main",
-              },
+              "& fieldset": { borderColor: "grey.300" },
+              "&:hover fieldset": { borderColor: "grey.400" },
+              "&.Mui-focused fieldset": { borderColor: "primary.main" },
             },
           }}
         />
@@ -166,39 +211,48 @@ function NewsList() {
         </Alert>
       </Snackbar>
 
-      {state.news.length > 0 ? (
+      {state.loading ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="400px"
+        >
+          <Typography variant="h6">{content.loading[language]}</Typography>
+        </Box>
+      ) : state.news.length > 0 ? (
         <>
           <Card
             component="a"
-            href={mainNews.url}
+            href={mainNews.link}
             target="_blank"
             rel="noopener noreferrer"
-            sx={{ mb: 4, textDecoration: 'none', display: 'block'}}
+            sx={{ mb: 4, textDecoration: "none", display: "block" }}
           >
             <CardActionArea>
               <CardMedia
                 component="img"
                 height="400"
-                image={mainNews.image_url}
-                alt={mainNews.title}
+                image={mainNews.imagem}
+                alt={mainNews.titulo}
               />
               <CardContent sx={{ backgroundColor: "white" }}>
                 <Typography variant="h4" component="h1" gutterBottom>
-                  {mainNews.title}
+                  {mainNews.titulo}
                 </Typography>
                 <Typography
                   variant="subtitle1"
                   color="text.secondary"
                   gutterBottom
                 >
-                  {mainNews.date}
+                  {mainNews.data}
                 </Typography>
-                <Typography variant="body1">{mainNews.description}</Typography>
+                <Typography variant="body1">{mainNews.descricao}</Typography>
               </CardContent>
             </CardActionArea>
           </Card>
 
-          {secondaryNewsList.length > 0 ? (
+          {secondaryNews.length > 0 && (
             <>
               <Typography
                 variant="h5"
@@ -209,46 +263,38 @@ function NewsList() {
                 {content.otherNews[language]}
               </Typography>
               <Grid container spacing={3}>
-                {secondaryNewsList.map((news, index) => (
+                {secondaryNews.map((news, index) => (
                   <Grid item size={{ xs: 12, sm: 6 }} key={index}>
                     <NewsCard {...news} />
                   </Grid>
                 ))}
               </Grid>
             </>
-          ) : null}
+          )}
 
-          <Box display="flex" justifyContent="center" mt={3}>
-            <Pagination
-              variant="outlined"
-              count={state.tabs}
-              page={state.page}
-              onChange={(event, value) =>
-                dispatch({ type: "setPage", payload: value })
-              }
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                mt: 4,
-                "& .MuiPaginationItem-root": {
-                  color: "grey.400",
-                  border: "1px solid grey.400",
-                  "&:hover": {
-                    color: "white",
-                    borderColor: "white",
+          {totalPages > 1 && (
+            <Box display="flex" justifyContent="center" mt={3}>
+              <Pagination
+                variant="outlined"
+                count={totalPages}
+                page={state.page}
+                onChange={(event, value) =>
+                  dispatch({ type: "setPage", payload: value })
+                }
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mt: 4,
+                  "& .MuiPaginationItem-root": {
+                    color: "grey.400",
+                    border: "1px solid grey.400",
+                    "&:hover": { color: "white", borderColor: "white" },
+                    "&.Mui-selected": { color: "white", borderColor: "white" },
                   },
-                  "&.Mui-selected": {
-                    color: "white",
-                    borderColor: "white",
-                    "&:hover": {
-                      color: "white",
-                      borderColor: "white",
-                    },
-                  },
-                },
-              }}
-            />
-          </Box>
+                }}
+              />
+            </Box>
+          )}
         </>
       ) : (
         <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 3 }}>

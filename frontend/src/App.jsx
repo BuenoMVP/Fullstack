@@ -1,10 +1,12 @@
-
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Box, CircularProgress } from "@mui/material";
+
 import { LanguageProvider } from "./contexts/LanguageContext";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import { Box } from "@mui/material";
-import NewsList from "./components/NewsList";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import Login from "./pages/Login";
+import News from "./pages/News";
+import CreateNews from "./pages/CreateNews";
 
 import "./App.css";
 
@@ -19,21 +21,60 @@ const theme = createTheme({
   },
 });
 
+const AppRoutes = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route 
+        path="/login" 
+        element={isAuthenticated ? <Navigate to="/news" replace /> : <Login />} 
+      />
+      <Route
+        path="/news"
+        element={isAuthenticated ? <News /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/create-news"
+        element={isAuthenticated ? <CreateNews /> : <Navigate to="/login" replace />}
+      />
+      <Route 
+        path="/" 
+        element={<Navigate to={isAuthenticated ? "/news" : "/login"} replace />} 
+      />
+      <Route 
+        path="*" 
+        element={<Navigate to={isAuthenticated ? "/news" : "/login"} replace />} 
+      />
+    </Routes>
+  );
+};
+
 function App() {
-  
   return (
     <ThemeProvider theme={theme}>
-      <LanguageProvider>
-        <Header />
-        <Box
-          sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
-        >
-          <Box component="main" sx={{ flex: 1, py: 4 }}>
-            <NewsList />
-          </Box>
-        </Box>
-        <Footer />
-      </LanguageProvider>
+      <AuthProvider>
+        <LanguageProvider>
+          <Router>
+            <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+              <AppRoutes />
+            </Box>
+          </Router>
+        </LanguageProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
