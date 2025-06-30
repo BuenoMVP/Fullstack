@@ -41,6 +41,13 @@ Execute o comando <pre> ```npm run back``` </pre> para iniciar o servidor em mod
 ### 6. Verificar funcionamento
 O servidor estará rodando em `http://localhost:8081` (ou na porta definida em VITE_BACKEND_PORT).
 
+### 7. Usuario teste
+O seguinte usuario teste foi inserido no banco para acesso:
+<pre>
+"email": "teste@gmail.com",
+"senha": "senha123"
+</pre>
+
 ## Critérios de avaliação - PARTE 1
 Os critérios de avaliação definidos na proposta do Projeto 1 foram atendidos e podem ser identificados do seguinte modo:
 - ### Atendimento as diretrizes de desenvolvimento web apresentadas durante as aulas. 
