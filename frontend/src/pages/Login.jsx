@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
+import React, { useState } from "react";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
 import {
   Box,
   TextField,
@@ -10,37 +10,36 @@ import {
   Alert,
   CircularProgress,
   Container,
-} from '@mui/material';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+  CardMedia,
+} from "@mui/material";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import Logo from "../logo.svg";
 
 const LoginSchema = Yup.object().shape({
-  email: Yup.string()
-    .email('Email inválido')
-    .required('Email é obrigatório'),
+  email: Yup.string().email("Email inválido").required("Email é obrigatório"),
   senha: Yup.string()
-    .min(6, 'Senha deve ter pelo menos 6 caracteres')
-    .required('Senha é obrigatória'),
+    .min(6, "Senha deve ter pelo menos 6 caracteres")
+    .required("Senha é obrigatória"),
 });
 
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState('');
-
+  const [error, setError] = useState("");
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
-    setError('');
-    
+    setError("");
+
     const result = await login(values.email, values.senha);
-    
+
     if (result.success) {
-      navigate('/news');
+      navigate("/news");
     } else {
       setError(result.error);
       resetForm();
     }
-    
+
     setSubmitting(false);
   };
 
@@ -48,10 +47,10 @@ const Login = () => {
     <Container maxWidth="sm">
       <Box
         sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           py: 4,
         }}
       >
@@ -59,15 +58,37 @@ const Login = () => {
           elevation={3}
           sx={{
             p: 4,
-            width: '100%',
+            width: "100%",
             maxWidth: 400,
           }}
         >
-          <Typography variant="h4" component="h1" fontWeight={700} gutterBottom align="center">
+          <CardMedia
+            component="img"
+            sx={{
+              height: "56px",
+              width: "auto",
+              objectFit: "contain",
+              margin: '0 auto 24px'
+            }}
+            image={Logo}
+            alt="UTFPR Logo"
+          />
+          <Typography
+            variant="h4"
+            component="h1"
+            fontWeight={700}
+            gutterBottom
+            align="center"
+          >
             Login
           </Typography>
-          
-          <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
+
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            align="center"
+            sx={{ mb: 3 }}
+          >
             Faça login para acessar as notícias
           </Typography>
 
@@ -78,11 +99,18 @@ const Login = () => {
           )}
 
           <Formik
-            initialValues={{ email: '', senha: '' }}
+            initialValues={{ email: "", senha: "" }}
             validationSchema={LoginSchema}
             onSubmit={handleSubmit}
           >
-            {({ values, errors, touched, isSubmitting, handleChange, handleBlur }) => (
+            {({
+              values,
+              errors,
+              touched,
+              isSubmitting,
+              handleChange,
+              handleBlur,
+            }) => (
               <Form>
                 <Field name="email">
                   {({ field }) => (
@@ -131,7 +159,7 @@ const Login = () => {
                   {isSubmitting ? (
                     <CircularProgress size={24} color="inherit" />
                   ) : (
-                    'Entrar'
+                    "Entrar"
                   )}
                 </Button>
               </Form>
@@ -143,4 +171,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

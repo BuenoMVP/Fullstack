@@ -11,7 +11,6 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemText,
   Divider,
 } from "@mui/material";
 import { useContext, useState } from "react";
