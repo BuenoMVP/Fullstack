@@ -33,7 +33,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, senha) => {
     try {
-      const response = await fetch(process.env.VITE_API_URL, {
+      const url = import.meta.env.VITE_API_URL + '/api/login';
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
