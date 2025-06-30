@@ -30,6 +30,7 @@ router.get('/', authenticateToken, cacheMiddleware(300), async (req, res) => {
       }
 
       const objNews = await schemaNews.find(query)
+        .sort({ data: -1 })
         .skip(offset)
         .limit(limit)
 

@@ -9,7 +9,7 @@ server.use(bodyParser.json());
 server.use(cors());
 
 server.get('/', (req, res) => {
-    res.send('Inincio do back')
+    res.send('Inicio do back')
 })
 
 server.use('/api', router);

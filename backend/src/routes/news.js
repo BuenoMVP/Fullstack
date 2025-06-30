@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.get('/', authenticateToken, async (_req, res) => {
     try {
-      const objNews = await schemaNews.find();
+      const objNews = await schemaNews.find().sort({ data: -1 });
 
       if (!objNews)
         return res.status(404).json({ msg: "Noticias não encontrados!" });
