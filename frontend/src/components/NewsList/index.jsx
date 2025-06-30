@@ -96,7 +96,7 @@ function NewsList() {
 
       try {
         const token = getToken();
-        const limit = 5;
+        const limit = 3;
         const offset = (state.page - 1) * limit;
 
         const params = new URLSearchParams();
@@ -137,13 +137,10 @@ function NewsList() {
 
   const mainNews = state.news[0];
   const secondaryNews = state.news.slice(1);
-  const totalPages = Math.ceil(state.total / 5);
+  const totalPages = Math.ceil(state.total / 3);
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h4" component="h1" sx={{ flex: 1 }}>
-        {content.otherNews[language]}
-      </Typography>
       <Box
         sx={{
           mb: 4,
