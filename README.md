@@ -7,10 +7,49 @@ Nosso objetivo consiste em criar uma plataforma capaz de realizar pesquisas de n
 Utilize o comando <pre> ```npm install -g vite``` </pre> dentro do terminal da pasta do projeto para instalar o Vite globalmente no seu sistema.
 ### 2. Instalação de dependências
 Utilize o comando <pre> ```npm install``` </pre> dentro do terminal da pasta do projeto.
-### 3. Iniciar Frontend
+### 3. Iniciar Frontend - Modo Dev
 Após a instalação das dependências utilize o comando <pre> ```npm run dev``` </pre> no terminal do projeto para iniciar o Frontend.
+### 4. Iniciar Frontend - Modo Produção
+Após a instalação das dependências utilize o comando <pre> ```npm run build``` </pre> e depois o comando  <pre> ```npm start``` </pre> no terminal do projeto para iniciar o Frontend.
 ### 4. Rota do navegador
-Entre na rota http://localhost:5173/ no seu navegador para poder utilizar a aplicação
+Entre na rota http://localhost:5173/ ou http://localhost:3001 no seu navegador para poder utilizar a aplicação
+
+## Como rodar o Backend localmente
+### 1. Configuração do ambiente
+Crie um arquivo `.env` na pasta `backend/` com as seguintes variáveis:
+<pre>
+VITE_DB_KEY=sua_chave_mongodb
+VITE_BACKEND_PORT=8080
+</pre>
+
+### 2. Instalação de dependências do Backend
+Navegue até a pasta `backend/` e execute o comando:
+<pre> ```npm install``` </pre>
+
+### 3. Configuração do MongoDB
+- Crie uma conta no [MongoDB Atlas](https://www.mongodb.com/atlas)
+- Crie um cluster gratuito
+- Obtenha a string de conexão e substitua `sua_chave_mongodb` no arquivo `.env`
+- A string de conexão deve seguir o padrão: `mongodb+srv://usuario:senha@cluster.mongodb.net/`
+
+### 4. Iniciar Backend - Modo Desenvolvimento
+Execute o comando <pre> ```npm run back:dev``` </pre> para iniciar o servidor com nodemon (reinicia automaticamente ao detectar mudanças).
+
+### 5. Iniciar Backend - Modo Produção
+Execute o comando <pre> ```npm run back``` </pre> para iniciar o servidor em modo produção.
+
+### 6. Verificar funcionamento
+O servidor estará rodando em `http://localhost:8080` (ou na porta definida em VITE_BACKEND_PORT).
+
+### 7. Endpoints disponíveis
+- `GET /api/users` - Listar usuários
+- `POST /api/users` - Criar usuário
+- `PUT /api/users/:id` - Atualizar usuário
+- `DELETE /api/users/:id` - Deletar usuário
+- `POST /api/login` - Autenticação
+- `GET /api/news` - Listar notícias
+- `POST /api/news` - Criar notícia
+- `GET /api/search` - Buscar notícias
 
 ## Critérios de avaliação - PARTE 1
 Os critérios de avaliação definidos na proposta do Projeto 1 foram atendidos e podem ser identificados do seguinte modo:
