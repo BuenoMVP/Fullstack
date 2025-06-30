@@ -6,6 +6,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Login from "./pages/Login";
 import News from "./pages/News";
+import CreateNews from "./pages/CreateNews";
 
 import "./App.css";
 
@@ -45,6 +46,10 @@ const AppRoutes = () => {
       <Route
         path="/news"
         element={isAuthenticated ? <News /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/create-news"
+        element={isAuthenticated ? <CreateNews /> : <Navigate to="/login" replace />}
       />
       <Route 
         path="/" 
