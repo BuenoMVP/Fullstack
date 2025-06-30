@@ -19,7 +19,7 @@ Entre na rota http://localhost:5173/ ou http://localhost:3001 no seu navegador p
 Crie um arquivo `.env` na pasta `backend/` com as seguintes variáveis:
 <pre>
 VITE_DB_KEY=sua_chave_mongodb
-VITE_BACKEND_PORT=8080
+VITE_BACKEND_PORT=8081
 </pre>
 
 ### 2. Instalação de dependências do Backend
@@ -39,17 +39,7 @@ Execute o comando <pre> ```npm run back:dev``` </pre> para iniciar o servidor co
 Execute o comando <pre> ```npm run back``` </pre> para iniciar o servidor em modo produção.
 
 ### 6. Verificar funcionamento
-O servidor estará rodando em `http://localhost:8080` (ou na porta definida em VITE_BACKEND_PORT).
-
-### 7. Endpoints disponíveis
-- `GET /api/users` - Listar usuários
-- `POST /api/users` - Criar usuário
-- `PUT /api/users/:id` - Atualizar usuário
-- `DELETE /api/users/:id` - Deletar usuário
-- `POST /api/login` - Autenticação
-- `GET /api/news` - Listar notícias
-- `POST /api/news` - Criar notícia
-- `GET /api/search` - Buscar notícias
+O servidor estará rodando em `http://localhost:8081` (ou na porta definida em VITE_BACKEND_PORT).
 
 ## Critérios de avaliação - PARTE 1
 Os critérios de avaliação definidos na proposta do Projeto 1 foram atendidos e podem ser identificados do seguinte modo:
@@ -89,14 +79,14 @@ O servidor retorna mensagens específicas para erros de validação de campos, f
 
 - ### Implementação do padrão REST na API desenvolvida
 API RESTful implementada com endpoints:
-- GET /api/users (listar usuários)
-- POST /api/users (criar usuário)
-- PUT /api/users/:id (atualizar usuário)
-- DELETE /api/users/:id (deletar usuário)
-- POST /api/login (autenticação)
-- GET /api/news (listar notícias)
-- POST /api/news (criar notícia) 
-- GET /api/search (buscar notícias).
+- `GET /api/users` - Listar usuários
+- `POST /api/users` - Criar usuário
+- `PUT /api/users/:id` - Atualizar usuário
+- `DELETE /api/users/:id` - Deletar usuário
+- `POST /api/login` - Autenticação
+- `GET /api/news` - Listar notícias
+- `POST /api/news` - Criar notícia
+- `GET /api/search` - Buscar notícias
 
 - ### Implementação de regras de segurança
 Para falhas de identificação e autenticação foi configurado rate limiting (5 tentativas por IP, bloqueio de 15 min), tokens JWT com expiração de 1 hora, middleware de autenticação para rotas protegidas e invalidação correta de tokens. Para falhas de registro e monitoramento foi implementado sistema de logs com Winston, logs de segurança em src/security.log, logs de atividade em src/app.log e monitoramento de login, buscas e operações CRUD.
