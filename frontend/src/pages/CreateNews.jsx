@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from '../contexts/AuthContext';
+import { LanguageContext } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -21,34 +22,66 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const validationSchema = Yup.object({
-  titulo: Yup.string()
-    .required('Título é obrigatório')
-    .min(3, 'Título deve ter pelo menos 3 caracteres')
-    .max(100, 'Título deve ter no máximo 100 caracteres'),
-  data: Yup.string()
-    .required('Data é obrigatória')
-    .matches(/^\d{2}\/\d{2}\/\d{4}$/, 'Data deve estar no formato DD/MM/YYYY'),
-  link: Yup.string()
-    .required('Link é obrigatório')
-    .url('Link deve ser uma URL válida'),
-  imagem: Yup.string()
-    .required('URL da imagem é obrigatória')
-    .url('URL da imagem deve ser válida'),
-  descricao: Yup.string()
-    .required('Descrição é obrigatória')
-    .min(10, 'Descrição deve ter pelo menos 10 caracteres')
-    .max(500, 'Descrição deve ter no máximo 500 caracteres'),
-  lingua: Yup.string()
-    .required('Idioma é obrigatório')
-    .oneOf(['pt', 'en'], 'Idioma deve ser português ou inglês')
-});
+const content = {
+  back: { en: "Back", pt: "Voltar" },
+  createNews: { en: "Create News", pt: "Criar Nova Notícia" },
+  title: { en: "Title", pt: "Título" },
+  date: { en: "Date (DD/MM/YYYY)", pt: "Data (DD/MM/YYYY)" },
+  language: { en: "Language", pt: "Idioma" },
+  portuguese: { en: "Portuguese", pt: "Português" },
+  english: { en: "English", pt: "English" },
+  newsLink: { en: "News Link", pt: "Link da Notícia" },
+  imageUrl: { en: "Image URL", pt: "URL da Imagem" },
+  description: { en: "Description", pt: "Descrição" },
+  createButton: { en: "Create News", pt: "Criar Notícia" },
+  successMessage: { en: "News created successfully!", pt: "Notícia criada com sucesso!" },
+  errorMessage: { en: "Error creating news", pt: "Erro ao criar notícia" },
+  connectionError: { en: "Connection error. Try again.", pt: "Erro de conexão. Tente novamente." },
+  titleRequired: { en: "Title is required", pt: "Título é obrigatório" },
+  titleMin: { en: "Title must have at least 3 characters", pt: "Título deve ter pelo menos 3 caracteres" },
+  titleMax: { en: "Title must have at most 100 characters", pt: "Título deve ter no máximo 100 caracteres" },
+  dateRequired: { en: "Date is required", pt: "Data é obrigatória" },
+  dateFormat: { en: "Date must be in DD/MM/YYYY format", pt: "Data deve estar no formato DD/MM/YYYY" },
+  linkRequired: { en: "Link is required", pt: "Link é obrigatório" },
+  linkValid: { en: "Link must be a valid URL", pt: "Link deve ser uma URL válida" },
+  imageRequired: { en: "Image URL is required", pt: "URL da imagem é obrigatória" },
+  imageValid: { en: "Image URL must be valid", pt: "URL da imagem deve ser válida" },
+  descriptionRequired: { en: "Description is required", pt: "Descrição é obrigatória" },
+  descriptionMin: { en: "Description must have at least 10 characters", pt: "Descrição deve ter pelo menos 10 caracteres" },
+  descriptionMax: { en: "Description must have at most 500 characters", pt: "Descrição deve ter no máximo 500 caracteres" },
+  languageRequired: { en: "Language is required", pt: "Idioma é obrigatório" },
+  languageValid: { en: "Language must be Portuguese or English", pt: "Idioma deve ser português ou inglês" },
+};
 
 const CreateNews = () => {
+  const { language } = useContext(LanguageContext);
   const { getToken } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+
+  const validationSchema = Yup.object({
+    titulo: Yup.string()
+      .required(content.titleRequired[language])
+      .min(3, content.titleMin[language])
+      .max(100, content.titleMax[language]),
+    data: Yup.string()
+      .required(content.dateRequired[language])
+      .matches(/^\d{2}\/\d{2}\/\d{4}$/, content.dateFormat[language]),
+    link: Yup.string()
+      .required(content.linkRequired[language])
+      .url(content.linkValid[language]),
+    imagem: Yup.string()
+      .required(content.imageRequired[language])
+      .url(content.imageValid[language]),
+    descricao: Yup.string()
+      .required(content.descriptionRequired[language])
+      .min(10, content.descriptionMin[language])
+      .max(500, content.descriptionMax[language]),
+    lingua: Yup.string()
+      .required(content.languageRequired[language])
+      .oneOf(['pt', 'en'], content.languageValid[language])
+  });
 
   const handleSubmit = async (values, { resetForm }) => {
     setLoading(true);
@@ -69,13 +102,13 @@ const CreateNews = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Notícia criada com sucesso!' });
+        setMessage({ type: 'success', text: content.successMessage[language] });
         resetForm();
       } else {
-        setMessage({ type: 'error', text: data.msg || 'Erro ao criar notícia' });
+        setMessage({ type: 'error', text: data.msg || content.errorMessage[language] });
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'Erro de conexão. Tente novamente.' });
+      setMessage({ type: 'error', text: content.connectionError[language] });
     } finally {
       setLoading(false);
     }
@@ -97,10 +130,10 @@ const CreateNews = () => {
                 onClick={handleBack}
                 sx={{ mr: 2 }}
               >
-                Voltar
+                {content.back[language]}
               </Button>
               <Typography variant="h4" component="h1" sx={{ flex: 1 }}>
-                Criar Nova Notícia
+                {content.createNews[language]}
               </Typography>
             </Box>
 
@@ -128,7 +161,7 @@ const CreateNews = () => {
                     <Field
                       name="titulo"
                       as={TextField}
-                      label="Título"
+                      label={content.title[language]}
                       fullWidth
                       error={touched.titulo && Boolean(errors.titulo)}
                       helperText={touched.titulo && errors.titulo}
@@ -137,7 +170,7 @@ const CreateNews = () => {
                     <Field
                       name="data"
                       as={TextField}
-                      label="Data (DD/MM/YYYY)"
+                      label={content.date[language]}
                       fullWidth
                       placeholder="DD/MM/YYYY"
                       error={touched.data && Boolean(errors.data)}
@@ -145,15 +178,15 @@ const CreateNews = () => {
                     />
 
                     <FormControl fullWidth error={touched.lingua && Boolean(errors.lingua)}>
-                      <InputLabel>Idioma</InputLabel>
+                      <InputLabel>{content.language[language]}</InputLabel>
                       <Select
                         name="lingua"
                         value={values.lingua}
-                        label="Idioma"
+                        label={content.language[language]}
                         onChange={(e) => setFieldValue('lingua', e.target.value)}
                       >
-                        <MenuItem value="pt">Português</MenuItem>
-                        <MenuItem value="en">English</MenuItem>
+                        <MenuItem value="pt">{content.portuguese[language]}</MenuItem>
+                        <MenuItem value="en">{content.english[language]}</MenuItem>
                       </Select>
                       {touched.lingua && errors.lingua && (
                         <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
@@ -165,7 +198,7 @@ const CreateNews = () => {
                     <Field
                       name="link"
                       as={TextField}
-                      label="Link da Notícia"
+                      label={content.newsLink[language]}
                       fullWidth
                       error={touched.link && Boolean(errors.link)}
                       helperText={touched.link && errors.link}
@@ -174,7 +207,7 @@ const CreateNews = () => {
                     <Field
                       name="imagem"
                       as={TextField}
-                      label="URL da Imagem"
+                      label={content.imageUrl[language]}
                       fullWidth
                       error={touched.imagem && Boolean(errors.imagem)}
                       helperText={touched.imagem && errors.imagem}
@@ -183,7 +216,7 @@ const CreateNews = () => {
                     <Field
                       name="descricao"
                       as={TextField}
-                      label="Descrição"
+                      label={content.description[language]}
                       multiline
                       rows={4}
                       fullWidth
@@ -201,7 +234,7 @@ const CreateNews = () => {
                       {loading ? (
                         <CircularProgress size={24} color="inherit" />
                       ) : (
-                        'Criar Notícia'
+                        content.createButton[language]
                       )}
                     </Button>
                   </Box>
