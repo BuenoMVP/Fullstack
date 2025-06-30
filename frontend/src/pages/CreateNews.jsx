@@ -107,7 +107,7 @@ const CreateNews = () => {
       } else {
         setMessage({ type: 'error', text: data.msg || content.errorMessage[language] });
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: content.connectionError[language] });
     } finally {
       setLoading(false);
