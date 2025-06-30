@@ -1,12 +1,13 @@
 import express from 'express'
 import schemaNews from '../models/News.js'
+import { authenticateToken } from './login.js'
 import { logActivity } from '../config/logger.js'
 
 const router = express.Router()
 
-router.get('/', async (_req, res) => {
+router.get('/', authenticateToken, async (_req, res) => {
     try {
-      const objNews = await schemaNews.find();
+      const objNews = await schemaNews.find().sort({ data: -1 });
 
       if (!objNews)
         return res.status(404).json({ msg: "Noticias não encontrados!" });
@@ -18,8 +19,7 @@ router.get('/', async (_req, res) => {
     }
 })
 
-router.post('/list', async (req, res) => {
-  console.log("Rota /list chamada com dados:", req.body);
+router.post('/list', authenticateToken, async (req, res) => {
     try {
       const noticias = req.body;
 
@@ -37,7 +37,8 @@ router.post('/list', async (req, res) => {
             data: noticia.data,
             link: noticia.link,
             imagem: noticia.imagem,
-            descricao: noticia.descricao
+            descricao: noticia.descricao,
+            lingua: noticia.lingua
           });
         }
       }
@@ -54,7 +55,7 @@ router.post('/list', async (req, res) => {
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
     try {
       const noticia = { ...req.body };
 
@@ -70,7 +71,8 @@ router.post('/', async (req, res) => {
         data: noticia.data,
         link: noticia.link,
         imagem: noticia.imagem,
-        descricao: noticia.descricao
+        descricao: noticia.descricao,
+        lingua: noticia.lingua
       }
 
       const objNews = await schemaNews.create(novaNoticia);
@@ -85,7 +87,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
     try {
       const { id } = req.params;
       const noticia = { ...req.body };
@@ -95,7 +97,8 @@ router.put('/:id', async (req, res) => {
         data: noticia.data,
         link: noticia.link,
         imagem: noticia.imagem,
-        descricao: noticia.descricao
+        descricao: noticia.descricao,
+        lingua: noticia.lingua
       }
 
       const objNews = await schemaNews.findByIdAndUpdate(id, novaNoticia);
@@ -110,7 +113,7 @@ router.put('/:id', async (req, res) => {
     }
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
     try {
       const { id } = req.params;
 

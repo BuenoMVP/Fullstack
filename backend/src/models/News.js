@@ -20,6 +20,10 @@ const newsSchema = new Schema({
     descricao: {
         type: String,
         required: true
+    },
+    lingua: {
+        type: String,
+        required: true
     }
 })
 

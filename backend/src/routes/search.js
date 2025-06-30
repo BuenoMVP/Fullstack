@@ -2,26 +2,35 @@ import express from 'express'
 import schemaNews from '../models/News.js'
 import { logActivity } from '../config/logger.js'
 import { cacheMiddleware } from '../config/cache.js'
+import { authenticateToken } from './login.js'
 
 const router = express.Router()
 
-router.get('/', cacheMiddleware(300), async (req, res) => {
+router.get('/', authenticateToken, cacheMiddleware(300), async (req, res) => {
     const limit = 3
     const offset = parseInt(req.query.offset) || 0
     const titulo = req.query.titulo || ''
+    const lingua = req.query.lingua || 'pt'
 
     try {
-      const query = {}
+      const query = { lingua: lingua }
       
       if (titulo) {
-        query.$or = [
-          { titulo: { $regex: titulo, $options: 'i' } },
-          { descricao: { $regex: titulo, $options: 'i' } },
-          { link: { $regex: titulo, $options: 'i' } }
+        query.$and = [
+          { lingua: lingua },
+          {
+            $or: [
+              { titulo: { $regex: titulo, $options: 'i' } },
+              { descricao: { $regex: titulo, $options: 'i' } },
+              { link: { $regex: titulo, $options: 'i' } }
+            ]
+          }
         ]
+        delete query.lingua
       }
 
       const objNews = await schemaNews.find(query)
+        .sort({ data: -1 })
         .skip(offset)
         .limit(limit)
 
